@@ -1,10 +1,111 @@
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class Pathfinder {
 
     public static void main(String[] args) {
+		TextHandler menu = new TextHandler();
         ArrayList<Node> nodes = createGraph();
-        printNodesAndNeighbours(nodes);
+		menu.displayMenu();
+		int choice = menu.userInt();
+
+		switch(choice){
+			case 1:
+				printNodesAndNeighbours(nodes);
+				break;
+			case 2:
+				runPathfinder(nodes);
+				break;
+		}
+        
+	
+    }
+
+    private static void runPathfinder(ArrayList<Node> nodes) {
+        double newF = 0;
+        double previousF = 0;
+        TextHandler menu = new TextHandler();
+        System.out.println("Choose a start node:");
+        int startNode = menu.chooseCity();
+        System.out.println("Choose an end node:");
+        int endNode = menu.chooseCity();
+        setStartEndNodes(startNode, endNode, nodes);
+        ArrayList<Node> open = new ArrayList<>();
+        ArrayList<Node> closed = new ArrayList<>();
+        Node.startNode.calcH();
+        Node.startNode.calcGee();
+        Node.currentNode = Node.startNode;
+        while (Node.currentNode != Node.endNode){
+            for (Node neighbour : Node.currentNode.getNeighbours()){
+                if(!closed.contains(neighbour) && !open.contains(neighbour)){
+                    open.add(neighbour);
+                    newF = neighbour.calcH() + neighbour.calcGee();
+                    if (newF < previousF){
+                        previousF = newF;
+                        neighbour.setPreviousNode(Node.currentNode);
+                    } // End second if
+                } // End first if
+                closed.add(Node.currentNode);
+                //Collections.sort(open, );
+                //Node.currentNode =
+            }
+        }
+    }
+
+    private static void setStartEndNodes(int start, int end, ArrayList<Node> nodes) {
+        switch (start){
+            // HKI
+            case 1:
+                Node.startNode = nodes.get(0);
+                break;
+                // Tampere
+            case 2:
+                Node.startNode = nodes.get(1);
+                break;
+                // Turku
+            case 3:
+                Node.startNode = nodes.get(2);
+                break;
+                //Jyväskylä
+            case 4:
+                Node.startNode = nodes.get(3);
+                break;
+                //Kuopio
+            case 5:
+                Node.startNode = nodes.get(4);
+                break;
+                // Lahtis
+            case 6:
+                Node.startNode = nodes.get(5);
+                break;
+        }
+        switch (end){
+            // HKI
+            case 1:
+                Node.endNode = nodes.get(0);
+                break;
+                // Tampere
+            case 2:
+                Node.endNode = nodes.get(1);
+                break;
+                // Turku
+            case 3:
+                Node.endNode = nodes.get(2);
+                break;
+                //Jyväskylä
+            case 4:
+                Node.endNode = nodes.get(3);
+                break;
+                //Kuopio
+            case 5:
+                Node.endNode = nodes.get(4);
+                break;
+                // Lahtis
+            case 6:
+                Node.endNode = nodes.get(5);
+                break;
+        }
     }
 
     private static void printNodesAndNeighbours(ArrayList<Node> nodes) {
