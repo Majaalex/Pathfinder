@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 public class Pathfinder {
 
@@ -34,23 +32,27 @@ public class Pathfinder {
         ArrayList<Node> open = new ArrayList<>();
         ArrayList<Node> closed = new ArrayList<>();
         Node.startNode.calcH();
-        Node.startNode.calcGee();
+        Node.startNode.calcG();
         Node.currentNode = Node.startNode;
         while (Node.currentNode != Node.endNode){
             for (Node neighbour : Node.currentNode.getNeighbours()){
                 if(!closed.contains(neighbour) && !open.contains(neighbour)){
                     open.add(neighbour);
-                    newF = neighbour.calcH() + neighbour.calcGee();
-                    if (newF < previousF){
-                        previousF = newF;
-                        neighbour.setPreviousNode(Node.currentNode);
-                    } // End second if
                 } // End first if
+                newF = neighbour.calcH() + neighbour.calcG();
+                if (newF < previousF){
+                    previousF = newF;
+                    neighbour.setPreviousNode(Node.currentNode);
+                } // End second if
                 closed.add(Node.currentNode);
+                //TODO: Sort the open list and get the Node with the smallest F
+                //TODO: And set that node to be the current one
                 //Collections.sort(open, );
                 //Node.currentNode =
             }
         }
+
+
     }
 
     private static void setStartEndNodes(int start, int end, ArrayList<Node> nodes) {

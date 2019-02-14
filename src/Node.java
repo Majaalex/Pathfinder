@@ -66,13 +66,13 @@ class Node {
 	
 
     // The distance from the previous to the current node
-    double calcGee(){
+    double calcG(){
         if(this == startNode){
             this.setTotalG(0);
             return 0;
         } else{
             this.setTotalG(getDistance(this, previousNode) + previousNode.getTotalG());
-            return getDistance(this, previousNode);
+            return this.getTotalG();
         }
 
     }
