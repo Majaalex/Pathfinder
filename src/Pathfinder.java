@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Pathfinder {
 
@@ -21,38 +22,84 @@ public class Pathfinder {
     }
 
     private static void runPathfinder(ArrayList<Node> nodes) {
-        double newF = 0;
-        double previousF = 0;
+        double tentativeG = 0;
+        ArrayList<Node> openNodes = new ArrayList<>();
+        ArrayList<Node> closedNodes = new ArrayList<>();
         TextHandler menu = new TextHandler();
+
         System.out.println("Choose a start node:");
         int startNode = menu.chooseCity();
         System.out.println("Choose an end node:");
         int endNode = menu.chooseCity();
         setStartEndNodes(startNode, endNode, nodes);
-        ArrayList<Node> open = new ArrayList<>();
-        ArrayList<Node> closed = new ArrayList<>();
-        Node.startNode.calcH();
-        Node.startNode.calcG();
+
+        openNodes.add(Node.startNode);
+        //firstAttempt(openNodes, closedNodes);
+
+        while (!openNodes.isEmpty()){
+            Collections.sort(openNodes);
+            if (openNodes.get(0) == Node.endNode){
+                printBestPath();
+                return;
+            } else {
+                Node.setCurrentNode(openNodes.get(0));
+                openNodes.remove(0);
+                closedNodes.add(Node.currentNode);
+                for (Node neighbour : Node.currentNode.getNeighbours()){
+                    if (!closedNodes.contains(neighbour)){
+                        tentativeG = Node.currentNode.getTotalG() + Node.currentNode.calculateGTo(neighbour);
+                        if (!openNodes.contains(neighbour)){
+                            openNodes.add(neighbour);
+                        } else if (tentativeG >= neighbour.getTotalG()){
+                            neighbour.setPreviousNode(Node.currentNode);
+                            neighbour.setTotalG(tentativeG);
+                            neighbour.setTotalF(neighbour.getTotalG() + neighbour.calculateH());
+                        }
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    private static void printBestPath() {
+        System.out.println(Node.endNode.getName());
+        System.out.println(Node.endNode.getPreviousNode());
+
+    }
+
+    private static void firstAttempt(ArrayList<Node> openNodes, ArrayList<Node> closedNodes) {
+        double previousF;
+        double newF;
+        System.out.println("startNode calc:");
+        Node.startNode.calculateH();
+        Node.startNode.calculateGTo(Node.startNode);
+        previousF = Node.startNode.calculateH() + Node.startNode.calculateGTo(Node.startNode);
         Node.currentNode = Node.startNode;
+
         while (Node.currentNode != Node.endNode){
+
             for (Node neighbour : Node.currentNode.getNeighbours()){
-                if(!closed.contains(neighbour) && !open.contains(neighbour)){
-                    open.add(neighbour);
+                if(!closedNodes.contains(neighbour) && !openNodes.contains(neighbour)){
+                    openNodes.add(neighbour);
                 } // End first if
-                newF = neighbour.calcH() + neighbour.calcG();
+                newF = neighbour.calculateH() + neighbour.calculateGTo(Node.currentNode);
+
                 if (newF < previousF){
                     previousF = newF;
                     neighbour.setPreviousNode(Node.currentNode);
                 } // End second if
-                closed.add(Node.currentNode);
-                //TODO: Sort the open list and get the Node with the smallest F
-                //TODO: And set that node to be the current one
-                //Collections.sort(open, );
-                //Node.currentNode =
+
+                closedNodes.add(Node.currentNode);
             }
+            Node.setCurrentNode(openNodes.get(0));
         }
-
-
+        System.out.println("Backtracked route:");
+        while (Node.currentNode != Node.startNode){
+            System.out.println(Node.currentNode.getName());
+            Node.currentNode = Node.currentNode.getPreviousNode();
+        }
     }
 
     private static void setStartEndNodes(int start, int end, ArrayList<Node> nodes) {

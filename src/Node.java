@@ -1,7 +1,7 @@
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-class Node {
+public class Node implements Comparable<Node> {
 	static Node startNode;
 	static Node endNode;
     private String name;
@@ -11,6 +11,8 @@ class Node {
     private Node previousNode;
     static Node currentNode;
     private double totalG;
+    static int aye = 0;
+    private double totalF;
 
     Node(String name, double lat, double lon){
         setName(name);
@@ -26,8 +28,14 @@ class Node {
     private void setLon(double lon){this.lon = lon;}
     void addNeighbour(Node neighbours){this.neighbours.add(neighbours);}
     void setPreviousNode(Node previousNode) {this.previousNode = previousNode;}
-    private void setTotalG(double totalG) {
+    void setTotalG(double totalG) {
         this.totalG = totalG;
+    }
+    void setTotalF(double totalF) {
+        this.totalF = totalF;
+    }
+    static void setCurrentNode(Node currentNode) {
+        Node.currentNode = currentNode;
     }
 	// SETTERS end
 	//------------------------------
@@ -38,9 +46,12 @@ class Node {
     private double getLon(){return lon;}
     private double getLat(){return lat;}
     ArrayList<Node> getNeighbours(){return neighbours;}
-    public Node getPreviousNode() {return previousNode;}
-    private double getTotalG() {
-        return totalG;
+    Node getPreviousNode() {return previousNode;}
+    double getTotalG() {
+        return this.totalG;
+    }
+    double getTotalF() {
+        return this.totalF;
     }
 	// GETTERS end
 	//------------------------------
@@ -51,10 +62,16 @@ class Node {
     private double getDistance(Node source, Node destination)
     {
         double toRad = Math.PI/180.0;
-        double lon1 = source.getLon() * toRad;
-        double lat1 = source.getLat()* toRad;
-        double lon2 = destination.getLon()* toRad;
-        double lat2 = destination.getLat()* toRad;
+            /*System.out.println(aye++ + ":");
+            System.out.println(source.getName());
+            System.out.println(source.getLon());
+            System.out.println(destination.getName());
+            System.out.println(destination.getLon());
+*/
+        double lon1 = source.getLon()  * toRad;
+        double lat1 = source.getLat() * toRad;
+        double lon2 = destination.getLon() * toRad;
+        double lat2 = destination.getLat() * toRad;
 
         double dlon = lon2 - lon1;
         double dlat = lat2 - lat1;
@@ -66,20 +83,26 @@ class Node {
 	
 
     // The distance from the previous to the current node
-    double calcG(){
-        if(this == startNode){
-            this.setTotalG(0);
-            return 0;
-        } else{
-            this.setTotalG(getDistance(this, previousNode) + previousNode.getTotalG());
-            return this.getTotalG();
-        }
-
+    double calculateGTo(Node previousNode){
+        double newG = getDistance(this, previousNode);
+        this.setTotalG(newG);
+        return this.getTotalG();
     }
 
-    double calcH(){
+    double calculateGTo(){
+         this.setTotalG(0);
+         return this.getTotalG();
+    }
+
+    double calculateH(){
         return getDistance(this, endNode);
         
     }
+
+    @Override
+    public int compareTo(Node o) {
+        return (int) (getTotalF() - o.getTotalF());
+    }
+
 }
 
