@@ -9,8 +9,8 @@ class Node extends PriorityQueue {
     private ArrayList<Node> neighbours = new ArrayList<>();
 
     // Variables used for A*
-    private double totalG;
-    private double totalF;
+    private double totalG = 100000;
+    private double totalF = 100000;
     private Node previousNode;
 
     // Static variables

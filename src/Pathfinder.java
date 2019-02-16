@@ -37,6 +37,7 @@ public class Pathfinder {
         while (!openNodesQueue.isEmpty()){
             // Updates currentNode to be the one with the lowest F in the queue
             Node.currentNode = openNodesQueue.poll();
+            System.out.println(Node.currentNode.getName() + " currently");
             if (Node.currentNode == Node.endNode){
                 printBestPath(Node.currentNode);
                 return;
@@ -44,22 +45,34 @@ public class Pathfinder {
 
             closedNodes.add(Node.currentNode);
 
-            for (Node neighbour : Node.currentNode.getNeighbours()){
+           for (Node neighbour : Node.currentNode.getNeighbours()){
                 if (closedNodes.contains(neighbour)){ continue; }
 
                 tentativeG = Node.currentNode.getTotalG() + getDistanceBetween(Node.currentNode, neighbour);
                 if (!openNodesQueue.contains(neighbour)){
-                    if (neighbour.getTotalG() == 0){
-                        neighbour.setTotalG(tentativeG);
-                        neighbour.setTotalF(tentativeG + getDistanceBetween(neighbour, Node.endNode));
-                    }
                     openNodesQueue.add(neighbour);
-                } else if (tentativeG >= neighbour.getTotalG()){ continue; }
+                } else if (tentativeG >= neighbour.getTotalG()){
+                    System.out.println("skippng the set");
+                    continue; }
 
                 neighbour.setPreviousNode(Node.currentNode);
                 neighbour.setTotalG(tentativeG);
                 neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
             }
+           /*
+            for (Node neighbour : Node.currentNode.getNeighbours()){
+                if (closedNodes.contains(neighbour)){continue;}
+
+                tentativeG = Node.currentNode.getTotalG() + getDistanceBetween(Node.currentNode, neighbour);
+                if (!openNodesQueue.contains(neighbour)){
+                    openNodesQueue.add(neighbour);
+                }
+                if (tentativeG < neighbour.getTotalG()){
+                    neighbour.setPreviousNode(Node.currentNode);
+                    neighbour.setTotalG(tentativeG);
+                    neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
+                }
+            }*/
         }
     }
 
