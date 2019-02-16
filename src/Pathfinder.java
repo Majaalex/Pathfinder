@@ -50,6 +50,9 @@ public class Pathfinder {
 
                 tentativeG = Node.currentNode.getTotalG() + getDistanceBetween(Node.currentNode, neighbour);
                 if (!openNodesQueue.contains(neighbour)){
+                    neighbour.setPreviousNode(Node.currentNode);
+                    neighbour.setTotalG(tentativeG);
+                    neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
                     openNodesQueue.add(neighbour);
                 } else if (tentativeG >= neighbour.getTotalG()){
                     System.out.println("skippng the set");
@@ -59,19 +62,21 @@ public class Pathfinder {
                 neighbour.setTotalG(tentativeG);
                 neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
             }
-           /*
-            for (Node neighbour : Node.currentNode.getNeighbours()){
+
+            /*for (Node neighbour : Node.currentNode.getNeighbours()){
                 if (closedNodes.contains(neighbour)){continue;}
 
                 tentativeG = Node.currentNode.getTotalG() + getDistanceBetween(Node.currentNode, neighbour);
-                if (!openNodesQueue.contains(neighbour)){
-                    openNodesQueue.add(neighbour);
-                }
                 if (tentativeG < neighbour.getTotalG()){
                     neighbour.setPreviousNode(Node.currentNode);
                     neighbour.setTotalG(tentativeG);
                     neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
                 }
+
+                if (!openNodesQueue.contains(neighbour)){
+                    openNodesQueue.add(neighbour);
+                }
+
             }*/
         }
     }
