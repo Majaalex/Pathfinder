@@ -1,27 +1,31 @@
 import java.util.*;
+import java.util.function.BiConsumer;
 
 public class Pathfinder {
 
     public static void main(String[] args) {
 		TextHandler menu = new TextHandler();
-        ArrayList<Node> nodes = createGraph();
+		HashMap<String, Node> nodeHashMap = createGraph();
+        //ArrayList<Node> nodes = createGraph();
 		menu.displayMenu();
-		int choice = menu.userInt();
+		int choice;
+		choice = menu.userInt();
+            switch(choice){
+                case 1:
+                    printNodesAndNeighbours(nodeHashMap);
+                    break;
+                case 2:
+                    System.out.println("Choose a start node:");
+                    String startNode = menu.chooseCity();
 
-		switch(choice){
-			case 1:
-				printNodesAndNeighbours(nodes);
-				break;
-			case 2:
-			    System.out.println("Choose a start node:");
-                int startNode = menu.chooseCity();
-                System.out.println("Choose an end node:");
-                int endNode = menu.chooseCity();
-                setStartEndNodes(startNode, endNode, nodes);
-                runPathfinder();
-                break;
-		}
-        
+                    System.out.println("Choose an end node:");
+                    String endNode = menu.chooseCity();
+
+                    setStartEndNodes(startNode, endNode, nodeHashMap);
+                    runPathfinder();
+                    break;
+            }
+
 	
     }
 
@@ -45,7 +49,7 @@ public class Pathfinder {
 
             // Enter each neighbour
            for (Node neighbour : Node.currentNode.getNeighbours()){
-               // skip if it's a close node
+               // skip if it's a closed node
                 if (closedNodes.contains(neighbour)){ continue; }
 
                 tentativeG = Node.currentNode.getTotalG() + getDistanceBetween(Node.currentNode, neighbour);
@@ -58,7 +62,9 @@ public class Pathfinder {
                     // skip the node if it already has a better G value
                     if (tentativeG >= neighbour.getTotalG()){ continue; }
 
-                neighbour.setPreviousNode(Node.currentNode);
+                    neighbour.setPreviousNode(Node.currentNode);
+                    neighbour.setTotalG(tentativeG);
+                    neighbour.setTotalF(tentativeG + getDistanceBetween(neighbour, Node.endNode));
             }
         }
     }
@@ -92,117 +98,152 @@ public class Pathfinder {
         System.out.println(path);
     }
 
-    private static void setStartEndNodes(int start, int end, ArrayList<Node> nodes) {
-        switch (start){
-            // HKI
-            case 1:
-                Node.startNode = nodes.get(start - 1);
-                break;
-                // Tampere
-            case 2:
-                Node.startNode = nodes.get(start - 1);
-                break;
-                // Turku
-            case 3:
-                Node.startNode = nodes.get(start - 1);
-                break;
-                //Jyväskylä
-            case 4:
-                Node.startNode = nodes.get(start - 1);
-                break;
-                //Kuopio
-            case 5:
-                Node.startNode = nodes.get(start - 1);
-                break;
-                // Lahtis
-            case 6:
-                Node.startNode = nodes.get(start - 1);
-                break;
-        }
-        switch (end){
-            // HKI
-            case 1:
-                Node.endNode = nodes.get(end - 1);
-                break;
-                // Tampere
-            case 2:
-                Node.endNode = nodes.get(end - 1);
-                break;
-                // Turku
-            case 3:
-                Node.endNode = nodes.get(end - 1);
-                break;
-                //Jyväskylä
-            case 4:
-                Node.endNode = nodes.get(end - 1);
-                break;
-                //Kuopio
-            case 5:
-                Node.endNode = nodes.get(end - 1);
-                break;
-                // Lahtis
-            case 6:
-                Node.endNode = nodes.get(end - 1);
-                break;
-        }
+    private static void setStartEndNodes(String start, String end, HashMap<String, Node> nodeHashMap) {
+        System.out.println(nodeHashMap.get(start));
+        Node.startNode = nodeHashMap.get(start);
+        System.out.println(nodeHashMap.get(end));
+        Node.endNode = nodeHashMap.get(end);
     }
 
-    private static void printNodesAndNeighbours(ArrayList<Node> nodes) {
-        for (Node node : nodes) {
-            System.out.println(node.getName() + " is connected to ");
+    private static void printNodesAndNeighbours(HashMap<String, Node> nodeHashMap) {
+        for (Node node : nodeHashMap.values()){
+            System.out.println(node.getName());
             for (Node neighbour : node.getNeighbours()){
-                System.out.println("     " + neighbour.getName());
+                System.out.println("     > " + neighbour.getName());
             }
-            System.out.println();
         }
     }
 
-    private static ArrayList<Node> createGraph()
+    private static HashMap<String, Node> createGraph()
     {
         //Skapar en nod för varje tågstation
-        Node hki = new Node("Helsingfors", 60.1640504, 24.7600896);
+        Node hki = new Node("Helsingfors", 60.1640504, 24.7600896);//1
         Node tpe = new Node("Tammerfors", 61.6277369, 23.5501169);
         Node tku = new Node("Abo", 60.4327477, 22.0853171);
         Node jyv = new Node("Jyväskylä", 62.1373432, 25.0954598);
         Node kpo = new Node("Kuopio", 62.9950487, 26.556762);
         Node lhi = new Node("Lahtis", 60.9948736, 25.5747703);
+        Node kar = new Node("Karjaa", 60.0714, 23.6619);
+        Node kou = new Node("Kouvola", 60.8679, 26.7042);
+        Node por = new Node("Pori", 61.4851, 21.7974);
+        Node joe = new Node("Joensuu", 62.6010, 29.7636);//10
+        Node sei = new Node("Seinäjoki", 62.7877, 22.8504);
+        Node vsa = new Node("Vasa", 63.0951, 21.6165);
+        Node kaj = new Node("Kajaani", 64.2222, 27.7278);
+        Node oul = new Node("Oulu", 65.0121, 25.4651);
+        Node rva = new Node("Rovaniemi", 66.5039, 25.7294);
+        Node par = new Node("Parikkala",61.5502, 29.5024 );
+        Node yli = new Node("Ylivieska", 64.0723, 24.5336);//17
 
         //Förbindelser från Helsingfors tågstation
         hki.addNeighbour(tpe); //Tammerfors
-        hki.addNeighbour(tku); //Åbo
+        hki.addNeighbour(kar); //Karis
         hki.addNeighbour(lhi); //Lahtis
+        hki.addNeighbour(kou); //kouvola
+
 
         //Förbindelser från Tammerfors tågstation
         tpe.addNeighbour(hki); //Helsingfors
         tpe.addNeighbour(tku); //Åbo
         tpe.addNeighbour(jyv); //Jyväskylä
         tpe.addNeighbour(lhi); //Lahtis
+        tpe.addNeighbour(por); //Pori
+        tpe.addNeighbour(sei); //Seinäjoki
 
         //Förbindelser från Åbo tågstation
-        tku.addNeighbour(hki); //Helsingfors
+        tku.addNeighbour(kar); //Karjaa
         tku.addNeighbour(tpe); //Tammerfors
 
         //Förbindelser från Jyväskylä tågstation
-        jyv.addNeighbour(tpe); //Tammerfors
+        jyv.addNeighbour(tpe);//Tammerfors
+        jyv.addNeighbour(sei);//seinäjoki
+        jyv.addNeighbour(kpo);//kuopio
+        jyv.addNeighbour(joe);//joensuu
+        jyv.addNeighbour(kou);//kouvola
 
         //Förbindelser från Kuopio tågstation
         kpo.addNeighbour(lhi); //Lahtis
+        kpo.addNeighbour(kaj);//kajaani
+        kpo.addNeighbour(joe);//joensuu
 
         //Förbindelser från Lahtis tågstation
         lhi.addNeighbour(hki); //Helsingors
         lhi.addNeighbour(tpe); //Tammerfors
-        lhi.addNeighbour(kpo); //Kuopio
+        lhi.addNeighbour(kou); //Kouvola
+
+        //TODO: PROI VASA OULU ROVA YLIVIESKA KAJAANI JOENSUU PARIKKALA KOUVOLA
+        //förbindelser från Pori
+        por.addNeighbour(tpe);//tampere
+
+        // vasa
+        vsa.addNeighbour(sei);//seinäjoki
+
+        //seinäjoki
+        sei.addNeighbour(vsa);
+        sei.addNeighbour(yli);
+        sei.addNeighbour(jyv);
+        sei.addNeighbour(tpe);
+
+        //ylivieska
+        yli.addNeighbour(oul);
+        yli.addNeighbour(sei);
+
+        //oulu
+        oul.addNeighbour(rva);
+        oul.addNeighbour(yli);
+        oul.addNeighbour(kaj);
+
+        //rova
+        rva.addNeighbour(oul);
+
+        //kajaani
+        kaj.addNeighbour(oul);
+        kaj.addNeighbour(kpo);
+
+        //joensuu
+        joe.addNeighbour(kpo);
+        joe.addNeighbour(jyv);
+        joe.addNeighbour(par);
+
+        //parikkala
+        par.addNeighbour(joe);
+        par.addNeighbour(kou);
+
+        //kouvola
+        kou.addNeighbour(par);
+        kou.addNeighbour(jyv);
+        kou.addNeighbour(lhi);
+        kou.addNeighbour(hki);
+
+        //karjaa
+        kar.addNeighbour(hki);
+        kar.addNeighbour(tku);
 
         //Skapar en lista för grafen och sätter in alla noder
         ArrayList<Node> graph = new ArrayList<>();
+        HashMap<String, Node> nodeHash = new HashMap<>();
         graph.add(hki);
         graph.add(tpe);
         graph.add(tku);
         graph.add(jyv);
         graph.add(kpo);
         graph.add(lhi);
+        graph.add(kar);
+        graph.add(vsa);
+        graph.add(oul);
+        graph.add(rva);
+        graph.add(kaj);
+        graph.add(joe);
+        graph.add(sei);
+        graph.add(par);
+        graph.add(yli);
+        graph.add(kou);
+        graph.add(kar);
+        for (Node node : graph){
+            nodeHash.put(node.getName(), node);
+        }
 
-        return graph;
+        return nodeHash;
     }
 }
 

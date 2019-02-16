@@ -26,13 +26,24 @@ class TextHandler {
         return reader.nextLine();
     }
 
-    int chooseCity() {
-        System.out.println("1: Helsinki");
-        System.out.println("2: Tammerfors");
-        System.out.println("3: Åbo");
-        System.out.println("4: Jyväskylä");
-        System.out.println("5: Kuopio");
-        System.out.println("6: Lahtis");
-        return reader.nextInt();
+    String chooseCity() {
+        System.out.println("Helsinki");
+        System.out.println("Karjaa");
+        System.out.println("Turku");
+        System.out.println("Tampere");
+        System.out.println("Pori");
+        System.out.println("Seinäjoki");
+        System.out.println("Vaasa");
+        System.out.println("Ylivieska");
+        System.out.println("Oulu");
+        System.out.println("Rovaniemi");
+        System.out.println("Kajaani");
+        System.out.println("Kuopio");
+        System.out.println("Joensuu");
+        System.out.println("Parikkala");
+        System.out.println("Jyväskylä");
+        System.out.println("Lahtis");
+        System.out.println("Kouvola");
+        return reader.next();
     }
 }
