@@ -13,54 +13,50 @@ public class Pathfinder {
 				printNodesAndNeighbours(nodes);
 				break;
 			case 2:
-
-                System.out.println("Choose a start node:");
+			    System.out.println("Choose a start node:");
                 int startNode = menu.chooseCity();
                 System.out.println("Choose an end node:");
                 int endNode = menu.chooseCity();
                 setStartEndNodes(startNode, endNode, nodes);
-                runPathfinder(nodes);
-				break;
+                runPathfinder();
+                break;
 		}
         
 	
     }
 
-    private static void runPathfinder(ArrayList<Node> nodes) {
+    private static void runPathfinder() {
         double tentativeG = 0;
 
 
         ArrayList<Node> closedNodes = new ArrayList<>();
         PriorityQueue<Node> openNodesQueue = new PriorityQueue<Node>( new NodeComparator());
-        TextHandler menu = new TextHandler();
 
         Node.startNode.setTotalG(0);
         Node.startNode.setTotalF(getDistanceBetween(Node.getStartNode(), Node.getEndNode()));
         openNodesQueue.add(Node.startNode);
         while (!openNodesQueue.isEmpty()){
-            System.out.println(openNodesQueue.peek().getName() + " at start of while");
             // Updates currentNode to be the one with the lowest F in the queue
             Node.currentNode = openNodesQueue.poll();
-
             if (Node.currentNode == Node.endNode){
-                System.out.println("Finish");
+                printBestPath(Node.currentNode);
                 return;
             }
+
             closedNodes.add(Node.currentNode);
 
             for (Node neighbour : Node.currentNode.getNeighbours()){
-                if (!closedNodes.contains(neighbour)){
-                    tentativeG = Node.currentNode.getTotalG() + getDistanceBetween(Node.currentNode, neighbour);
+                if (closedNodes.contains(neighbour)){ continue; }
 
-                    if (!openNodesQueue.contains(neighbour)){
-                        openNodesQueue.add(neighbour);
-                    } else if (tentativeG >= neighbour.getTotalG()){
-                        break;
-                    }
-                    neighbour.setPreviousNode(Node.currentNode);
-                    neighbour.setTotalG(tentativeG);
-                    neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
-                }
+                tentativeG = Node.currentNode.getTotalG() + getDistanceBetween(Node.currentNode, neighbour);
+
+                if (!openNodesQueue.contains(neighbour)){
+                    openNodesQueue.add(neighbour);
+                } else if (tentativeG >= neighbour.getTotalG()){ continue; }
+                neighbour.setPreviousNode(Node.currentNode);
+                neighbour.setTotalG(tentativeG);
+                neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
+
             }
         }
     }
@@ -86,13 +82,16 @@ public class Pathfinder {
         return getDistanceBetween(origin, Node.getEndNode());
 
     }
-    private static void printBestPath() {
-        Node currentNode = Node.getEndNode();
-        while(currentNode != Node.getStartNode()){
-            System.out.println(currentNode.getName());
+    private static void printBestPath(Node currentNode) {
+        System.out.println("The best path is: ");
+        String path = "";
+        while (currentNode != Node.startNode){
+            path = path.concat(currentNode.getName() + "  ");
             currentNode = currentNode.getPreviousNode();
         }
 
+        path = path.concat(Node.startNode.getName() + "  ");
+        System.out.println(path);
     }
 
     private static void setStartEndNodes(int start, int end, ArrayList<Node> nodes) {
