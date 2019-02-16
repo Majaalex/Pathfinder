@@ -36,8 +36,6 @@ class Node extends PriorityQueue {
     void setPreviousNode(Node previousNode) {this.previousNode = previousNode;}
     void setTotalG(double totalG){ this.totalG = totalG; }
     void setTotalF(double totalF){ this.totalF = totalF; }
-    static void setStartNode(Node start){startNode = start;}
-    static void setEndNode(Node end){endNode = end;}
 	// SETTERS end
 	//------------------------------
 	
@@ -52,8 +50,6 @@ class Node extends PriorityQueue {
     Node getPreviousNode() {return previousNode;}
     double getTotalG() {return totalG;}
     double getTotalF() {return totalF;}
-    static Node getEndNode(){return endNode;}
-    static Node getStartNode(){return startNode; }
 	// GETTERS end
 	//------------------------------
 	

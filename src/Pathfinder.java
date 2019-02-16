@@ -32,52 +32,34 @@ public class Pathfinder {
         PriorityQueue<Node> openNodesQueue = new PriorityQueue<Node>( new NodeComparator());
 
         Node.startNode.setTotalG(0);
-        Node.startNode.setTotalF(getDistanceBetween(Node.getStartNode(), Node.getEndNode()));
+        Node.startNode.setTotalF(getDistanceBetween(Node.startNode, Node.endNode));
         openNodesQueue.add(Node.startNode);
         while (!openNodesQueue.isEmpty()){
             // Updates currentNode to be the one with the lowest F in the queue
             Node.currentNode = openNodesQueue.poll();
-            System.out.println(Node.currentNode.getName() + " currently");
             if (Node.currentNode == Node.endNode){
                 printBestPath(Node.currentNode);
                 return;
             }
-
             closedNodes.add(Node.currentNode);
 
+            // Enter each neighbour
            for (Node neighbour : Node.currentNode.getNeighbours()){
+               // skip if it's a close node
                 if (closedNodes.contains(neighbour)){ continue; }
 
                 tentativeG = Node.currentNode.getTotalG() + getDistanceBetween(Node.currentNode, neighbour);
+                // add to queue if it's not already there
                 if (!openNodesQueue.contains(neighbour)){
-                    neighbour.setPreviousNode(Node.currentNode);
                     neighbour.setTotalG(tentativeG);
-                    neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
+                    neighbour.setTotalF(tentativeG + getDistanceBetween(neighbour, Node.endNode));
                     openNodesQueue.add(neighbour);
-                } else if (tentativeG >= neighbour.getTotalG()){
-                    System.out.println("skippng the set");
-                    continue; }
+                } else
+                    // skip the node if it already has a better G value
+                    if (tentativeG >= neighbour.getTotalG()){ continue; }
 
                 neighbour.setPreviousNode(Node.currentNode);
-                neighbour.setTotalG(tentativeG);
-                neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
             }
-
-            /*for (Node neighbour : Node.currentNode.getNeighbours()){
-                if (closedNodes.contains(neighbour)){continue;}
-
-                tentativeG = Node.currentNode.getTotalG() + getDistanceBetween(Node.currentNode, neighbour);
-                if (tentativeG < neighbour.getTotalG()){
-                    neighbour.setPreviousNode(Node.currentNode);
-                    neighbour.setTotalG(tentativeG);
-                    neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
-                }
-
-                if (!openNodesQueue.contains(neighbour)){
-                    openNodesQueue.add(neighbour);
-                }
-
-            }*/
         }
     }
 
@@ -96,11 +78,6 @@ public class Pathfinder {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         // 6367 is Earth's radius, return value is KM
         return 6367 * c;
-    }
-
-    private double calculateH(Node origin){
-        return getDistanceBetween(origin, Node.getEndNode());
-
     }
 
     private static void printBestPath(Node currentNode) {
@@ -232,9 +209,9 @@ public class Pathfinder {
 class NodeComparator implements Comparator<Node> {
     @Override
     public int compare(Node node1, Node node2) {
-        if (node1.getTotalF() < node2.getTotalF()){
+        if (node1.getTotalF() > node2.getTotalF()){
             return 1;
-        } else if (node1.getTotalF() > node2.getTotalF()){
+        } else if (node1.getTotalF() < node2.getTotalF()){
             return -1;
         }
         return 0;
