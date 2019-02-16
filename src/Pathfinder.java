@@ -28,7 +28,6 @@ public class Pathfinder {
     private static void runPathfinder() {
         double tentativeG = 0;
 
-
         ArrayList<Node> closedNodes = new ArrayList<>();
         PriorityQueue<Node> openNodesQueue = new PriorityQueue<Node>( new NodeComparator());
 
@@ -49,14 +48,17 @@ public class Pathfinder {
                 if (closedNodes.contains(neighbour)){ continue; }
 
                 tentativeG = Node.currentNode.getTotalG() + getDistanceBetween(Node.currentNode, neighbour);
-
                 if (!openNodesQueue.contains(neighbour)){
+                    if (neighbour.getTotalG() == 0){
+                        neighbour.setTotalG(tentativeG);
+                        neighbour.setTotalF(tentativeG + getDistanceBetween(neighbour, Node.endNode));
+                    }
                     openNodesQueue.add(neighbour);
                 } else if (tentativeG >= neighbour.getTotalG()){ continue; }
+
                 neighbour.setPreviousNode(Node.currentNode);
                 neighbour.setTotalG(tentativeG);
                 neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
-
             }
         }
     }
@@ -82,6 +84,7 @@ public class Pathfinder {
         return getDistanceBetween(origin, Node.getEndNode());
 
     }
+
     private static void printBestPath(Node currentNode) {
         System.out.println("The best path is: ");
         String path = "";
@@ -206,18 +209,14 @@ public class Pathfinder {
 
         return graph;
     }
-
-
-
-
 }
 
 class NodeComparator implements Comparator<Node> {
     @Override
     public int compare(Node node1, Node node2) {
-        if (node1.getTotalF() > node2.getTotalF()){
+        if (node1.getTotalF() < node2.getTotalF()){
             return 1;
-        } else if (node1.getTotalF() < node2.getTotalF()){
+        } else if (node1.getTotalF() > node2.getTotalF()){
             return -1;
         }
         return 0;
