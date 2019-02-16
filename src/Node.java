@@ -1,7 +1,6 @@
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.util.*;
 
-public class Node implements Comparable<Node> {
+class Node extends PriorityQueue implements Comparable<Node> {
 	static Node startNode;
 	static Node endNode;
     private String name;
@@ -11,7 +10,6 @@ public class Node implements Comparable<Node> {
     private Node previousNode;
     static Node currentNode;
     private double totalG;
-    static int aye = 0;
     private double totalF;
 
     Node(String name, double lat, double lon){
@@ -59,7 +57,7 @@ public class Node implements Comparable<Node> {
 	
 	
 	// Returns the distance between two nodes in KM
-    private double getDistance(Node source, Node destination)
+    double getDistanceTo(Node destination)
     {
         double toRad = Math.PI/180.0;
             /*System.out.println(aye++ + ":");
@@ -68,8 +66,8 @@ public class Node implements Comparable<Node> {
             System.out.println(destination.getName());
             System.out.println(destination.getLon());
 */
-        double lon1 = source.getLon()  * toRad;
-        double lat1 = source.getLat() * toRad;
+        double lon1 = this.getLon()  * toRad;
+        double lat1 = this.getLat() * toRad;
         double lon2 = destination.getLon() * toRad;
         double lat2 = destination.getLat() * toRad;
 
@@ -80,29 +78,16 @@ public class Node implements Comparable<Node> {
         // 6367 is Earth's radius, return value is KM
         return 6367 * c;
     }
-	
-
-    // The distance from the previous to the current node
-    double calculateGTo(Node previousNode){
-        double newG = getDistance(this, previousNode);
-        this.setTotalG(newG);
-        return this.getTotalG();
-    }
-
-    double calculateGTo(){
-         this.setTotalG(0);
-         return this.getTotalG();
-    }
 
     double calculateH(){
-        return getDistance(this, endNode);
+        return getDistanceTo(endNode);
         
     }
 
+
     @Override
     public int compareTo(Node o) {
-        return (int) (getTotalF() - o.getTotalF());
+        return 0;
     }
-
 }
 
