@@ -13,7 +13,13 @@ public class Pathfinder {
 				printNodesAndNeighbours(nodes);
 				break;
 			case 2:
-				runPathfinder(nodes);
+
+                System.out.println("Choose a start node:");
+                int startNode = menu.chooseCity();
+                System.out.println("Choose an end node:");
+                int endNode = menu.chooseCity();
+                setStartEndNodes(startNode, endNode, nodes);
+                runPathfinder(nodes);
 				break;
 		}
         
@@ -27,50 +33,62 @@ public class Pathfinder {
         ArrayList<Node> closedNodes = new ArrayList<>();
         PriorityQueue<Node> openNodesQueue = new PriorityQueue<Node>( new NodeComparator());
         TextHandler menu = new TextHandler();
-        System.out.println("Choose a start node:");
-        int startNode = menu.chooseCity();
-        System.out.println("Choose an end node:");
-        int endNode = menu.chooseCity();
-        setStartEndNodes(startNode, endNode, nodes);
 
+        Node.startNode.setTotalG(0);
+        Node.startNode.setTotalF(getDistanceBetween(Node.getStartNode(), Node.getEndNode()));
         openNodesQueue.add(Node.startNode);
-        //firstAttempt(openNodes, closedNodes);
-
         while (!openNodesQueue.isEmpty()){
-            int i = 0;
-            System.out.println("NEW ROUND");
-            System.out.println(openNodesQueue.peek().getName());
+            System.out.println(openNodesQueue.peek().getName() + " at start of while");
+            // Updates currentNode to be the one with the lowest F in the queue
+            Node.currentNode = openNodesQueue.poll();
 
-            Node.setCurrentNode(openNodesQueue.peek());
-            if (openNodesQueue.peek() == Node.endNode){
-                //printBestPath();
-                System.out.println("goal");
+            if (Node.currentNode == Node.endNode){
+                System.out.println("Finish");
                 return;
-            } else {
-                openNodesQueue.remove();
-                closedNodes.add(Node.currentNode);
-                for (Node neighbour : Node.currentNode.getNeighbours()){
-                    if (!closedNodes.contains(neighbour)){
-                        tentativeG = Node.currentNode.getTotalG() + Node.currentNode.getDistanceTo(neighbour);
-                        if (!openNodesQueue.contains(neighbour)){
-                            openNodesQueue.add(neighbour);
-                        }
-                        else if (tentativeG >= neighbour.getTotalG()){
-                            neighbour.setPreviousNode(Node.currentNode);
-                            neighbour.setTotalG(tentativeG);
-                            neighbour.setTotalF(neighbour.getTotalG() + neighbour.calculateH());
-                        }
+            }
+            closedNodes.add(Node.currentNode);
+
+            for (Node neighbour : Node.currentNode.getNeighbours()){
+                if (!closedNodes.contains(neighbour)){
+                    tentativeG = Node.currentNode.getTotalG() + getDistanceBetween(Node.currentNode, neighbour);
+
+                    if (!openNodesQueue.contains(neighbour)){
+                        openNodesQueue.add(neighbour);
+                    } else if (tentativeG >= neighbour.getTotalG()){
+                        break;
                     }
+                    neighbour.setPreviousNode(Node.currentNode);
+                    neighbour.setTotalG(tentativeG);
+                    neighbour.setTotalF(neighbour.getTotalG() + getDistanceBetween(neighbour, Node.endNode));
                 }
             }
-
         }
-
     }
 
+    // Returns the distance between two nodes in KM
+    static private double getDistanceBetween(Node origin, Node destination)
+    {
+        double toRad = Math.PI/180.0;
+        double lon1 = origin.getLon()  * toRad;
+        double lat1 = origin.getLat() * toRad;
+        double lon2 = destination.getLon() * toRad;
+        double lat2 = destination.getLat() * toRad;
+
+        double dlon = lon2 - lon1;
+        double dlat = lat2 - lat1;
+        double a = Math.pow(Math.sin(dlat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon/2), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        // 6367 is Earth's radius, return value is KM
+        return 6367 * c;
+    }
+
+    private double calculateH(Node origin){
+        return getDistanceBetween(origin, Node.getEndNode());
+
+    }
     private static void printBestPath() {
-        Node currentNode = Node.endNode;
-        while(currentNode != Node.startNode){
+        Node currentNode = Node.getEndNode();
+        while(currentNode != Node.getStartNode()){
             System.out.println(currentNode.getName());
             currentNode = currentNode.getPreviousNode();
         }
@@ -81,53 +99,53 @@ public class Pathfinder {
         switch (start){
             // HKI
             case 1:
-                Node.startNode = nodes.get(0);
+                Node.startNode = nodes.get(start - 1);
                 break;
                 // Tampere
             case 2:
-                Node.startNode = nodes.get(1);
+                Node.startNode = nodes.get(start - 1);
                 break;
                 // Turku
             case 3:
-                Node.startNode = nodes.get(2);
+                Node.startNode = nodes.get(start - 1);
                 break;
                 //Jyväskylä
             case 4:
-                Node.startNode = nodes.get(3);
+                Node.startNode = nodes.get(start - 1);
                 break;
                 //Kuopio
             case 5:
-                Node.startNode = nodes.get(4);
+                Node.startNode = nodes.get(start - 1);
                 break;
                 // Lahtis
             case 6:
-                Node.startNode = nodes.get(5);
+                Node.startNode = nodes.get(start - 1);
                 break;
         }
         switch (end){
             // HKI
             case 1:
-                Node.endNode = nodes.get(0);
+                Node.endNode = nodes.get(end - 1);
                 break;
                 // Tampere
             case 2:
-                Node.endNode = nodes.get(1);
+                Node.endNode = nodes.get(end - 1);
                 break;
                 // Turku
             case 3:
-                Node.endNode = nodes.get(2);
+                Node.endNode = nodes.get(end - 1);
                 break;
                 //Jyväskylä
             case 4:
-                Node.endNode = nodes.get(3);
+                Node.endNode = nodes.get(end - 1);
                 break;
                 //Kuopio
             case 5:
-                Node.endNode = nodes.get(4);
+                Node.endNode = nodes.get(end - 1);
                 break;
                 // Lahtis
             case 6:
-                Node.endNode = nodes.get(5);
+                Node.endNode = nodes.get(end - 1);
                 break;
         }
     }
@@ -190,5 +208,20 @@ public class Pathfinder {
         return graph;
     }
 
+
+
+
+}
+
+class NodeComparator implements Comparator<Node> {
+    @Override
+    public int compare(Node node1, Node node2) {
+        if (node1.getTotalF() > node2.getTotalF()){
+            return 1;
+        } else if (node1.getTotalF() < node2.getTotalF()){
+            return -1;
+        }
+        return 0;
+    }
 }
 
