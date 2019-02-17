@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.Scanner;
 
 class TextHandler {
@@ -26,24 +27,10 @@ class TextHandler {
         return reader.nextLine();
     }
 
-    String chooseCity() {
-        System.out.println("Helsinki");
-        System.out.println("Karjaa");
-        System.out.println("Turku");
-        System.out.println("Tampere");
-        System.out.println("Pori");
-        System.out.println("Seinäjoki");
-        System.out.println("Vaasa");
-        System.out.println("Ylivieska");
-        System.out.println("Oulu");
-        System.out.println("Rovaniemi");
-        System.out.println("Kajaani");
-        System.out.println("Kuopio");
-        System.out.println("Joensuu");
-        System.out.println("Parikkala");
-        System.out.println("Jyväskylä");
-        System.out.println("Lahtis");
-        System.out.println("Kouvola");
+    String chooseCity(HashMap<String, Node> nodeHashMap) {
+        for (Node node : nodeHashMap.values()){
+            System.out.println(node.getName());
+        }
         return reader.next();
     }
 }

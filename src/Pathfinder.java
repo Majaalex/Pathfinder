@@ -16,10 +16,10 @@ public class Pathfinder {
                     break;
                 case 2:
                     System.out.println("Choose a start node:");
-                    String startNode = menu.chooseCity();
+                    String startNode = menu.chooseCity(nodeHashMap);
 
                     System.out.println("Choose an end node:");
-                    String endNode = menu.chooseCity();
+                    String endNode = menu.chooseCity(nodeHashMap);
 
                     setStartEndNodes(startNode, endNode, nodeHashMap);
                     runPathfinder();
@@ -41,6 +41,7 @@ public class Pathfinder {
         while (!openNodesQueue.isEmpty()){
             // Updates currentNode to be the one with the lowest F in the queue
             Node.currentNode = openNodesQueue.poll();
+            System.out.println(Node.currentNode.getName() + " is current");
             if (Node.currentNode == Node.endNode){
                 printBestPath(Node.currentNode);
                 return;
@@ -88,20 +89,21 @@ public class Pathfinder {
 
     private static void printBestPath(Node currentNode) {
         System.out.println("The best path is: ");
-        String path = "";
+        ArrayList<Node> nodeList = new ArrayList<>();
+
         while (currentNode != Node.startNode){
-            path = path.concat(currentNode.getName() + "  ");
+            nodeList.add(currentNode);
             currentNode = currentNode.getPreviousNode();
         }
-
-        path = path.concat(Node.startNode.getName() + "  ");
-        System.out.println(path);
+        nodeList.add(currentNode);
+        int j = 1;
+        for (int i = nodeList.size() - 1; i >= 0; i--){
+            System.out.println(j++ + " " + nodeList.get(i).getName());
+        }
     }
 
     private static void setStartEndNodes(String start, String end, HashMap<String, Node> nodeHashMap) {
-        System.out.println(nodeHashMap.get(start));
         Node.startNode = nodeHashMap.get(start);
-        System.out.println(nodeHashMap.get(end));
         Node.endNode = nodeHashMap.get(end);
     }
 
@@ -117,9 +119,9 @@ public class Pathfinder {
     private static HashMap<String, Node> createGraph()
     {
         //Skapar en nod för varje tågstation
-        Node hki = new Node("Helsingfors", 60.1640504, 24.7600896);//1
-        Node tpe = new Node("Tammerfors", 61.6277369, 23.5501169);
-        Node tku = new Node("Abo", 60.4327477, 22.0853171);
+        Node hki = new Node("Helsinki", 60.1640504, 24.7600896);//1
+        Node tpe = new Node("Tampere", 61.6277369, 23.5501169);
+        Node tku = new Node("Turku", 60.4327477, 22.0853171);
         Node jyv = new Node("Jyväskylä", 62.1373432, 25.0954598);
         Node kpo = new Node("Kuopio", 62.9950487, 26.556762);
         Node lhi = new Node("Lahtis", 60.9948736, 25.5747703);
@@ -239,6 +241,7 @@ public class Pathfinder {
         graph.add(yli);
         graph.add(kou);
         graph.add(kar);
+        graph.add(por);
         for (Node node : graph){
             nodeHash.put(node.getName(), node);
         }
